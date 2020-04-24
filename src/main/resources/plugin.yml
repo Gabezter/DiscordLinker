@@ -1,0 +1,80 @@
+name: DiscordLink
+main: com.gmail.gabezter.Main.Main
+version: 0.0.1
+author: Gabezter4
+depend: [Vault]
+commands:
+  discordlink:
+    description: Registers the user to the Discord
+    usage: /<command> [player]
+    permission: discordlink.player
+    permission-message: You don't have permission
+    aliases: dc
+permissions:
+  discordlink.*:
+    default: op
+    children:
+      discordlink.admin.*: true
+  discordlink.register:
+    default: true
+  discordlink.link:
+    default: true
+  discordlink.unlink:
+    default: true
+  discordlink.player:
+    default: true
+    children:
+      discordlink.link: true
+      discordlink.register: true
+      discordlink.unlink: true
+  discordlink.admin:
+    default: op
+    children:
+      discordlink.player: true
+  discordlink.admin.id:
+    default: op
+  discordlink.admin.rank.add:
+    default: op
+  discordlink.admin.rank.remove:
+    default: op
+  discordlink.admin.rank.list:
+    default: op
+  discordlink.admin.rank.*:
+    default: op
+    children:
+      discordlink.admin.rank.add: true
+      discordlink.admin.rank.remove: true
+      discordlink.admin.rank.list: true
+  discordlink.admin.config.reload:
+    default: op
+  discordlink.admin.config.set.*:
+    default: op
+    children:
+      discordlink.admin.config.set.forcelink: true
+      discordlink.admin.config.set.timeout.length: true
+      discordlink.admin.config.set.timeout.type: true
+      discordlink.admin.config.set.update.from: true
+      discordlink.admin.config.set.update.rate: true
+      discordlink.admin.config.set.update.temporal: true
+  discordlink.admin.config.set.forcelink:
+    default: op
+  discordlink.admin.config.set.timeout.length:
+    default: op
+  discordlink.admin.config.set.timeout.type:
+    default: op
+  discordlink.admin.config.set.update.from:
+    default: op
+  discordlink.admin.config.set.update.rate:
+    default: op
+  discordlink.admin.config.set.update.temporal:
+    default: op
+  discordlink.admin.*:
+    default: op
+    children:
+      discordlink.admin: true
+      discordlink.admin.id: true
+      discordlink.admin.rank.add: true
+      discordlink.admin.rank.remove: true
+      discordlink.admin.rank.list: true
+      discordlink.admin.reload: true
+      discordlink.admin.config.set.*: true

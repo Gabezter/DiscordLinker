@@ -1,0 +1,31 @@
+# Used to verfy that that the discord server is owned by an admin of the server
+id:
+# Forces player to link to discord. Will freeze player when they log in, until they link their discord to thier minecraft account
+forceLink: false
+timeout:
+  length: 5
+  # The type of time that the code will be active
+  # m: minutes (default)
+  # d: days
+  # s: seconds
+  # h: hours
+  type: "m"
+# Update is used to determine the rate and direction that the ranks are updated. 
+update:
+  # True: The ranks are read from Minecraft Server
+  # False: The ranks are read from Discord Server
+  FromMinecraft: true
+  # The time that the ranks will be updated. Default is 5 minutes
+  rate: 4
+  # The type of time that the ranks will be updated
+  # m: minutes 
+  # d: days
+  # s: seconds
+  # h: hours (default)
+  temporal: "h"
+  # Writes message to server logger when the ranks are updated.
+  # True: writes message
+  # False: does NOT write message
+  message: true
+# Discord bot token.
+token: "ChangeMe"
