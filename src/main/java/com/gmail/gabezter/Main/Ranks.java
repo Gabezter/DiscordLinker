@@ -23,7 +23,6 @@ import org.xml.sax.SAXException;
 
 public class Ranks {
 
-	private Plugin plugin;
 	private File ranks;
 	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	DocumentBuilder builder = null;
@@ -31,7 +30,6 @@ public class Ranks {
 	Element root;
 
 	public Ranks(Plugin plugin) {
-		this.plugin = plugin;
 		ranks = new File(plugin.getDataFolder(), "ranks.xml");
 		if (!ranks.exists()) {
 			try {
