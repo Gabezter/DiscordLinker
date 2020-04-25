@@ -109,6 +109,18 @@ public class Main extends JavaPlugin {
 	}
 
 	void setupConfig() {
+		
+		token = (String) config.getConfig(Config.CONFIG.TOKEN);
+		id = (String) config.getConfig(Config.CONFIG.ID);
+		forceLink = (boolean) config.getConfig(Config.CONFIG.FORCELINK);
+		timeoutLength = (int) config.getConfig(Config.CONFIG.TIMEOUT_LENGTH);
+		timeoutType = (String) config.getConfig(Config.CONFIG.TIMEOUT_TYPE);
+		updateFrom = (boolean) config.getConfig(Config.CONFIG.UPDATE_FROM);
+		updateRate = (int) config.getConfig(Config.CONFIG.UPDATE_RATE);
+		updateType = (String) config.getConfig(Config.CONFIG.UPDATE_TEMPORAL);
+		updateMessage = (boolean) config.getConfig(Config.CONFIG.UPDATE_MESSAGE);
+		
+		/*
 		token = getConfig().getString("token");
 		id = getConfig().getString("id");
 		forceLink = getConfig().getBoolean("forceLink");
@@ -118,12 +130,14 @@ public class Main extends JavaPlugin {
 		updateRate = getConfig().getInt("update.rate");
 		updateType = getConfig().getString("update.temporal");
 		updateMessage = getConfig().getBoolean("update.message");
+		*/
 		if (id == null || id.isEmpty()) {
 			id = createCode();
 			getLogger().info(id);
-			getConfig().set("id", id);
-			saveConfig();
-			reloadConfig();
+			config.writeToConfig(Config.CONFIG.ID, id);
+			setupConfig();
+//			saveConfig();
+//			reloadConfig();
 		}
 	}
 
