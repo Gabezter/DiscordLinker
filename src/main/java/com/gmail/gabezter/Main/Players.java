@@ -12,7 +12,6 @@ import java.util.UUID;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -23,7 +22,6 @@ import org.bukkit.plugin.Plugin;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
@@ -57,14 +55,7 @@ public class Players {
 			try {
 				builder = factory.newDocumentBuilder();
 				doc = builder.parse(players);
-			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ParserConfigurationException e) {
-				// TODO Auto-generated catch block
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			root = doc.getDocumentElement();
@@ -115,7 +106,6 @@ public class Players {
 						DateTimeFormatter.ofPattern("yyyy-MM-dd H:mm:ss z"));
 				if (timeout.compareTo(now) == -1) {
 					codeE.setTextContent(code);
-//					codeE.getElementsByTagName("");
 					dmUser(dName, code, Main.timeoutLength, Main.timeoutType);
 					success = 1;
 				}
@@ -245,7 +235,7 @@ public class Players {
 		saveXML();
 		return success;
 	}
-	
+
 	public long getDiscordID(UUID uuid) {
 		NodeList list = root.getElementsByTagName(uuid.toString());
 		if (list.getLength() == 1) {
@@ -254,11 +244,11 @@ public class Players {
 			String discordID = discord.getElementsByTagName("id").item(0).getTextContent();
 			return Long.parseLong(discordID);
 		}
-		
+
 		return 0L;
 	}
-	
-	public static HashMap<UUID, Long> players(Plugin plugin){
+
+	public static HashMap<UUID, Long> players(Plugin plugin) {
 
 		File playersFile;
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -277,7 +267,6 @@ public class Players {
 						+ "<players></players>");
 				bw.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -285,26 +274,19 @@ public class Players {
 			try {
 				builder = factory.newDocumentBuilder();
 				doc = builder.parse(playersFile);
-			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ParserConfigurationException e) {
-				// TODO Auto-generated catch block
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			root = doc.getDocumentElement();
 		}
-		
+
 		HashMap<UUID, Long> players = new HashMap<UUID, Long>();
 		int count = root.getChildNodes().getLength();
-		for(int i = 0; i < count; i++) {
+		for (int i = 0; i < count; i++) {
 			Element list = (Element) root.getChildNodes().item(i);
 			Element disc = (Element) list.getElementsByTagName("discord").item(0);
 			Long dID = Long.parseLong(disc.getElementsByTagName("id").item(0).getTextContent());
-			players.put(UUID.fromString(list.getNodeName()),dID);
+			players.put(UUID.fromString(list.getNodeName()), dID);
 		}
 		return players;
 	}
