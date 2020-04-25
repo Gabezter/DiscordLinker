@@ -44,7 +44,7 @@ public class Main extends JavaPlugin {
 	public void onEnable() {
 		File conf = new File(this.getDataFolder(), "config.yml");
 		if (!conf.exists())
-			saveDefaultConfig();
+			config.saveDefaultConfig();
 		setupConfig();
 		if (token != null && !token.equalsIgnoreCase("") && !token.equalsIgnoreCase("ChangeMe"))
 			success = botSetup();
@@ -63,8 +63,7 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		getConfig().set("id", id);
-		saveConfig();
+		config.writeToConfig(Configure.ID, id);
 		if (success)
 			bot.shutdownNow();
 		getLogger().info("Discord bot has been shutdown");
@@ -110,15 +109,25 @@ public class Main extends JavaPlugin {
 
 	void setupConfig() {
 		
-		token = (String) config.getConfig(Config.CONFIG.TOKEN);
-		id = (String) config.getConfig(Config.CONFIG.ID);
-		forceLink = (boolean) config.getConfig(Config.CONFIG.FORCELINK);
-		timeoutLength = (int) config.getConfig(Config.CONFIG.TIMEOUT_LENGTH);
-		timeoutType = (String) config.getConfig(Config.CONFIG.TIMEOUT_TYPE);
-		updateFrom = (boolean) config.getConfig(Config.CONFIG.UPDATE_FROM);
-		updateRate = (int) config.getConfig(Config.CONFIG.UPDATE_RATE);
-		updateType = (String) config.getConfig(Config.CONFIG.UPDATE_TEMPORAL);
-		updateMessage = (boolean) config.getConfig(Config.CONFIG.UPDATE_MESSAGE);
+		token = (String) config.getConfig(Configure.TOKEN);
+		id = (String) config.getConfig(Configure.ID);
+		forceLink = (boolean) config.getConfig(Configure.FORCELINK);
+		timeoutLength = (int) config.getConfig(Configure.TIMEOUT_LENGTH);
+		timeoutType = (String) config.getConfig(Configure.TIMEOUT_TYPE);
+		updateFrom = (boolean) config.getConfig(Configure.UPDATE_FROM);
+		updateRate = (int) config.getConfig(Configure.UPDATE_RATE);
+		updateType = (String) config.getConfig(Configure.UPDATE_TEMPORAL);
+		updateMessage = (boolean) config.getConfig(Configure.UPDATE_MESSAGE);
+		
+		Configure.TOKEN.setObj(token);
+		Configure.ID.setObj(id);
+		Configure.FORCELINK.setObj(forceLink);
+		Configure.TIMEOUT_LENGTH.setObj(timeoutLength);
+		Configure.TIMEOUT_TYPE.setObj(timeoutType);
+		Configure.UPDATE_FROM.setObj(updateFrom);
+		Configure.UPDATE_RATE.setObj(updateRate);
+		Configure.UPDATE_TEMPORAL.setObj(updateType);
+		Configure.UPDATE_MESSAGE.setObj(updateMessage);
 		
 		/*
 		token = getConfig().getString("token");
@@ -134,7 +143,7 @@ public class Main extends JavaPlugin {
 		if (id == null || id.isEmpty()) {
 			id = createCode();
 			getLogger().info(id);
-			config.writeToConfig(Config.CONFIG.ID, id);
+			config.writeToConfig(Configure.ID, id);
 			setupConfig();
 //			saveConfig();
 //			reloadConfig();

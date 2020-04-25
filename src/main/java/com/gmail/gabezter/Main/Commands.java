@@ -16,12 +16,14 @@ public class Commands implements CommandExecutor {
 	Main main;
 	Players players;
 	Ranks ranks;
+	Config config;
 	String id = ChatColor.BLUE + Main.consoleID + ChatColor.RESET + " ";
 
 	public Commands(Plugin plugin) {
 		this.plugin = plugin;
 		players = new Players(plugin);
 		ranks = new Ranks(plugin);
+		config = new Config(plugin);
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -164,8 +166,10 @@ public class Commands implements CommandExecutor {
 						if (args[2].equalsIgnoreCase("UPDATE")) {
 							if (args[3].equalsIgnoreCase("temporal")) {
 								if (checkPermission(Cmds.UPDATE_TEMPORAL, sender)) {
-									plugin.getConfig().set("", "");
-									plugin.saveConfig();
+									configUpdate(Configure.UPDATE_TEMPORAL, args[4], sender);
+									config.writeToConfig(Configure.UPDATE_TEMPORAL, "");
+//									plugin.getConfig().set("", "");
+//									plugin.saveConfig();
 									main.setupConfig();
 								} else {
 									noPermission(sender);
@@ -173,7 +177,7 @@ public class Commands implements CommandExecutor {
 							}
 							if (args[3].equalsIgnoreCase("rate")) {
 								if (checkPermission(Cmds.RATE, sender)) {
-
+									configUpdate(Configure.UPDATE_RATE, args[4], sender);
 								} else {
 									noPermission(sender);
 								}
@@ -182,13 +186,14 @@ public class Commands implements CommandExecutor {
 						if (args[2].equalsIgnoreCase("TIMEOUT")) {
 							if (args[3].equalsIgnoreCase("length")) {
 								if (checkPermission(Cmds.LENGTH, sender)) {
-
+									configTimeout(Configure.TIMEOUT_LENGTH, args[4], sender);
 								} else {
 									noPermission(sender);
 								}
 							}
 							if (args[3].equalsIgnoreCase("temporal")) {
 								if (checkPermission(Cmds.TIMEOUT_TEMPORAL, sender)) {
+									configTimeout(Configure.TIMEOUT_TYPE, args[4], sender);
 
 								} else {
 									noPermission(sender);
@@ -211,8 +216,8 @@ public class Commands implements CommandExecutor {
 						else
 							sender.sendMessage(id + "Failed to update ranks");
 					}
-					if(command.equalsIgnoreCase("help")) {
-						sender.sendMessage("-------- "+id+"--------");
+					if (command.equalsIgnoreCase("help")) {
+						sender.sendMessage("-------- " + id + "--------");
 					}
 					return true;
 				}
@@ -247,29 +252,35 @@ public class Commands implements CommandExecutor {
 					if (command.equalsIgnoreCase("config")) {
 						if (args[2].equalsIgnoreCase("UPDATE")) {
 							if (args[3].equalsIgnoreCase("temporal")) {
-								plugin.getConfig().set("", "");
-								plugin.saveConfig();
+								configUpdate(Configure.UPDATE_TEMPORAL, args[4], sender);
+//								config.writeToConfig(Configure.UPDATE_TEMPORAL, "");
+//								plugin.getConfig().set("", "");
+//								plugin.saveConfig();
 								main.setupConfig();
 							} else if (args[3].equalsIgnoreCase("rate")) {
-								plugin.getConfig().set("", "");
-								plugin.saveConfig();
+								configUpdate(Configure.UPDATE_RATE, args[4], sender);
+//								config.writeToConfig(Configure.UPDATE_RATE, "");
+//								plugin.getConfig().set("", "");
+//								plugin.saveConfig();
 								main.setupConfig();
 							} else if (args[3].equalsIgnoreCase("from")) {
-								if (args[4].equalsIgnoreCase("true")) {
-									plugin.getConfig().set("update.FromMinecraft", true);
-									sender.sendMessage("The plugin will now update from the Minecraft server");
-									plugin.saveConfig();
-									main.setupConfig();
-								} else if (args[4].equalsIgnoreCase("false")) {
-									plugin.getConfig().set("update.FromMinecraft", false);
-									sender.sendMessage(id + "The plugin will now update from the Discord server!");
-									plugin.saveConfig();
-									main.setupConfig();
-
-								} else
-									sender.sendMessage("Value must be " + ChatColor.BOLD + "true" + ChatColor.RESET
-											+ " or " + ChatColor.BOLD + "false" + ChatColor.RESET + ". not " + args[4]);
-
+								configUpdate(Configure.UPDATE_FROM, args[4], sender);
+								/*
+								 * if (args[4].equalsIgnoreCase("true")) {
+								 * config.writeToConfig(Configure.UPDATE_FROM, true); //
+								 * plugin.getConfig().set("update.FromMinecraft", true);
+								 * sender.sendMessage("The plugin will now update from the Minecraft server");
+								 * // plugin.saveConfig(); main.setupConfig(); } else if
+								 * (args[4].equalsIgnoreCase("false")) {
+								 * config.writeToConfig(Configure.UPDATE_FROM, false); //
+								 * plugin.getConfig().set("update.FromMinecraft", false); sender.sendMessage(id
+								 * + "The plugin will now update from the Discord server!"); //
+								 * plugin.saveConfig(); main.setupConfig();
+								 * 
+								 * } else sender.sendMessage("Value must be " + ChatColor.BOLD + "true" +
+								 * ChatColor.RESET + " or " + ChatColor.BOLD + "false" + ChatColor.RESET +
+								 * ". not " + args[4]);
+								 */
 							} else {
 								sender.sendMessage(id + "Command must be " + ChatColor.BOLD + "temporal"
 										+ ChatColor.RESET + "," + ChatColor.BOLD + " rate" + ChatColor.RESET + ", or "
@@ -279,14 +290,11 @@ public class Commands implements CommandExecutor {
 						}
 						if (args[2].equalsIgnoreCase("TIMEOUT")) {
 							if (args[3].equalsIgnoreCase("length")) {
-								plugin.getConfig().set("timeout.length", args[4]);
-								plugin.saveConfig();
-								plugin.reloadConfig();
+								config.writeToConfig(Configure.TIMEOUT_LENGTH, args[4]);
 								main.setupConfig();
 							}
 							if (args[3].equalsIgnoreCase("temporal")) {
-								plugin.getConfig().set("timeout.type", args[4]);
-								plugin.saveConfig();
+								config.writeToConfig(Configure.TIMEOUT_TYPE, args[4]);
 								main.setupConfig();
 							}
 						}
@@ -346,9 +354,98 @@ public class Commands implements CommandExecutor {
 	private void noPermission(CommandSender sender) {
 		sender.sendMessage(id + ChatColor.RED + "You do not have permission for that!");
 	}
+
+	private boolean configUpdate(Configure conf, String arg, CommandSender sender) {
+		switch (conf) {
+		case UPDATE_TEMPORAL:
+			config.writeToConfig(Configure.UPDATE_TEMPORAL, "");
+//			plugin.getConfig().set("", "");
+//			plugin.saveConfig();
+			main.setupConfig();
+			return true;
+		case UPDATE_RATE:
+			config.writeToConfig(Configure.UPDATE_RATE, "");
+//			plugin.getConfig().set("", "");
+//			plugin.saveConfig();
+			main.setupConfig();
+			return true;
+		case UPDATE_FROM:
+			if (arg.equalsIgnoreCase("true")) {
+				config.writeToConfig(Configure.UPDATE_FROM, true);
+//				plugin.getConfig().set("update.FromMinecraft", true);
+				sender.sendMessage("The plugin will now update from the Minecraft server");
+//				plugin.saveConfig();
+				main.setupConfig();
+			} else if (arg.equalsIgnoreCase("false")) {
+				config.writeToConfig(Configure.UPDATE_FROM, false);
+//				plugin.getConfig().set("update.FromMinecraft", false);
+				sender.sendMessage(id + "The plugin will now update from the Discord server!");
+//				plugin.saveConfig();
+				main.setupConfig();
+			} else
+				sender.sendMessage("Value must be " + ChatColor.BOLD + "true" + ChatColor.RESET + " or "
+						+ ChatColor.BOLD + "false" + ChatColor.RESET + ". not " + arg);
+			return true;
+		default:
+			sender.sendMessage(id + "Command must be " + ChatColor.BOLD + "temporal" + ChatColor.RESET + ","
+					+ ChatColor.BOLD + " rate" + ChatColor.RESET + ", or " + ChatColor.BOLD + "from");
+			return true;
+		}
+	}
+
+	/*
+	 * if (cmd.equalsIgnoreCase("temporal")) {
+	 * config.writeToConfig(Configure.UPDATE_TEMPORAL, ""); //
+	 * plugin.getConfig().set("", ""); // plugin.saveConfig(); main.setupConfig(); }
+	 * else if (cmd.equalsIgnoreCase("rate")) {
+	 * config.writeToConfig(Configure.UPDATE_RATE, ""); //
+	 * plugin.getConfig().set("", ""); // plugin.saveConfig(); main.setupConfig(); }
+	 * else if (cmd.equalsIgnoreCase("from")) { if (arg.equalsIgnoreCase("true")) {
+	 * config.writeToConfig(Configure.UPDATE_FROM, true); //
+	 * plugin.getConfig().set("update.FromMinecraft", true);
+	 * sender.sendMessage("The plugin will now update from the Minecraft server");
+	 * // plugin.saveConfig(); main.setupConfig(); } else if
+	 * (arg.equalsIgnoreCase("false")) { config.writeToConfig(Configure.UPDATE_FROM,
+	 * false); // plugin.getConfig().set("update.FromMinecraft", false);
+	 * sender.sendMessage(id +
+	 * "The plugin will now update from the Discord server!"); //
+	 * plugin.saveConfig(); main.setupConfig();
+	 */
+//	}
+//
+//	}else{sender.sendMessage(id+"Command must be "+ChatColor.BOLD+"temporal"+ChatColor.RESET+","+ChatColor.BOLD+" rate"+ChatColor.RESET+", or "+ChatColor.BOLD+"from");}return false;}
+
+	private boolean configTimeout(Configure conf, String arg, CommandSender sender) {
+		switch (conf) {
+		case TIMEOUT_LENGTH:
+			config.writeToConfig(conf, arg);
+//			plugin.getConfig().set("timeout.length", args[4]);
+//			plugin.saveConfig();
+//			plugin.reloadConfig();
+			main.setupConfig();
+			return true;
+		case TIMEOUT_TYPE:
+			config.writeToConfig(conf, arg);
+			return true;
+		default:
+			return true;
+		}
+	}
 }
 
 enum Cmds {
-	REG, LINK, ID, ADD, REMOVE, LIST, RELOAD, FORCELINK, LENGTH, TIMEOUT_TEMPORAL, FROM, RATE, UPDATE_TEMPORAL, UNLINK,
-	ADMIN
+	REG("register"), LINK("link"), ID(""), ADD("add"), REMOVE("remove"), LIST("list"), RELOAD("reload"),
+	FORCELINK("forcelink"), LENGTH("length"), TIMEOUT_TEMPORAL("type"), FROM("from"), RATE("rate"),
+	UPDATE_TEMPORAL("temporal"), UNLINK("unlink"), ADMIN("admin");
+
+	private final String cmd;
+
+	private Cmds(String cmd) {
+		this.cmd = cmd;
+	}
+
+	@Override
+	public String toString() {
+		return cmd;
+	}
 }

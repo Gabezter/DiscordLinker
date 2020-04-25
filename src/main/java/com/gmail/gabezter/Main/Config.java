@@ -19,10 +19,6 @@ public class Config {
 	private ArrayList<String> conf = new ArrayList<String>();
 	private int addLines = 0;
 
-	enum CONFIG {
-		ID, FORCELINK, TIMEOUT_LENGTH, TIMEOUT_TYPE, UPDATE_FROM, UPDATE_RATE, UPDATE_TEMPORAL, UPDATE_MESSAGE, TOKEN
-	}
-
 	public Config(Plugin plugin) {
 		this.plugin = plugin;
 		config = new HashMap<Object, Object>();
@@ -142,7 +138,7 @@ public class Config {
 	}
 
 	@SuppressWarnings("unchecked")
-	public boolean writeToConfig(CONFIG conf, Object object) {
+	public boolean writeToConfig(Configure conf, Object object) {
 		try {
 			Map<Object, Object> timeout = (Map<Object, Object>) config.get("timeout");
 			Map<Object, Object> update = (Map<Object, Object>) config.get("update");
@@ -286,7 +282,7 @@ public class Config {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Object getConfig(CONFIG conf) {
+	public Object getConfig(Configure conf) {
 		Map<Object, Object> timeout = (Map<Object, Object>) config.get("timeout");
 		Map<Object, Object> update = (Map<Object, Object>) config.get("update");
 		switch (conf) {
