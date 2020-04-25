@@ -11,27 +11,26 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import org.bukkit.plugin.Plugin;
 
 public class Config {
-	private Map<Object, Object> config;
+	private static Map<Object, Object> config;
 	private Plugin plugin;
-	private ArrayList<String> conf = new ArrayList<String>();
-	private int addLines = 0;
+	private static ArrayList<String> conf = new ArrayList<String>();
+	private static int addLines = 0;
 
-	public Config(Plugin plugin) {
+	public Config() {
 		this.plugin = plugin;
 		config = new HashMap<Object, Object>();
-		File f = new File(plugin.getDataFolder(), "config.yml");
+		File f = new File("config.yml");
 		if (!f.exists())
 			saveDefaultConfig();
 		readToMap();
 	}
-
-	public void reload() {
+	
+	public static void reload() {
 		File f;
 		try {
-			f = new File(plugin.getDataFolder(), "config.yml");
+			f = new File("config.yml");
 			Scanner reader = new Scanner(f);
 			while (reader.hasNext()) {
 				String line = reader.nextLine();
@@ -49,16 +48,16 @@ public class Config {
 			}
 			reader.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			plugin.getPluginLoader().disablePlugin(plugin);
 		}
 	}
 
-	public Map<Object, Object> read() {
+	public static Map<Object, Object> read() {
 		return config;
 	}
 
-	private Map<Object, Object> readTimeout(Scanner reader) {
+	private static Map<Object, Object> readTimeout(Scanner reader) {
 		Map<Object, Object> timeout = new HashMap<Object, Object>();
 		String line = reader.nextLine();
 		while (!line.contains("# Update")) {
@@ -76,7 +75,7 @@ public class Config {
 		return timeout;
 	}
 
-	private Map<Object, Object> readUpdate(Scanner reader) {
+	private static Map<Object, Object> readUpdate(Scanner reader) {
 		Map<Object, Object> update = new HashMap<Object, Object>();
 		String line = reader.nextLine();
 		while (!line.contains("# Discord")) {
@@ -94,11 +93,11 @@ public class Config {
 		return update;
 	}
 
-	private void readToMap() {
+	private static void readToMap() {
 		conf.clear();
 		File f;
 		try {
-			f = new File(plugin.getDataFolder(), "config.yml");
+			f = new File( "config.yml");
 			Scanner reader = new Scanner(f);
 			while (reader.hasNext()) {
 				boolean skip = false;
@@ -123,7 +122,7 @@ public class Config {
 					} else if (tmp[0].equalsIgnoreCase("token"))
 						config.put("token", tmp[1]);
 					else {
-						plugin.getLogger().warning(tmp[0]);
+						System.out.println(line);
 						config.put(tmp[0], tmp[1]);
 					}
 				}
@@ -136,8 +135,8 @@ public class Config {
 		}
 	}
 
-	private void save() throws IOException {
-		PrintWriter pw = new PrintWriter(new FileWriter(plugin.getDataFolder() + "/config.yml", false));
+	private static void save() throws IOException {
+		PrintWriter pw = new PrintWriter(new FileWriter("config.yml", false));
 		ArrayList<String> tmp = merge();
 		conf = tmp;
 		for (String line : conf) {
@@ -147,7 +146,7 @@ public class Config {
 	}
 
 	@SuppressWarnings("unchecked")
-	public boolean writeToConfig(Configure conf, Object object) {
+	public static boolean writeToConfig(Configure conf, Object object) {
 		try {
 			Map<Object, Object> timeout = (Map<Object, Object>) config.get("timeout");
 			Map<Object, Object> update = (Map<Object, Object>) config.get("update");
@@ -162,10 +161,9 @@ public class Config {
 				timeout.put("length", object);
 				break;
 			case TIMEOUT_TYPE:
-				config.put("type", object);
+				timeout.put("type", object);
 				break;
 			case UPDATE_FROM:
-				plugin.getLogger().info("You called?");
 				update.put("FromMinecraft", object);
 				break;
 			case UPDATE_RATE:
@@ -191,7 +189,7 @@ public class Config {
 	}
 
 	@SuppressWarnings("unchecked")
-	private ArrayList<String> merge() {
+	private static ArrayList<String> merge() {
 		ArrayList<String> fileLines = new ArrayList<String>();
 		for (int i = 0; i < conf.size(); i++) {
 			if (!conf.get(i).contains("#")) {
@@ -203,10 +201,11 @@ public class Config {
 					fileLines.addAll(readUpdateMap((Map<Object, Object>) config.get("update"), i));
 					i += addLines - 1;
 				} else {
-					String configLine = (String) config.get(confLine.split(":")[0]);
+					String configLine = config.get(confLine.split(":")[0]).toString();
 					if (configLine == null)
 						configLine = " ";
-					fileLines.add(confLine.split(":")[0] + ": " + configLine);
+					String line = confLine.split(":")[0] + ": " + configLine;
+					fileLines.add(line);
 				}
 			} else
 				fileLines.add(conf.get(i));
@@ -214,16 +213,14 @@ public class Config {
 		return fileLines;
 	}
 
-	private Collection<String> readTimeoutMap(Map<Object, Object> timeout, int lineNumber) {
+	private static Collection<String> readTimeoutMap(Map<Object, Object> timeout, int lineNumber) {
 		Collection<String> timeoutLines = new ArrayList<String>();
 		String line = conf.get(lineNumber);
 		addLines = 0;
 		while (!line.contains("# Update")) {
 			addLines++;
-			if (!conf.get(lineNumber).contains("#") && conf.get(lineNumber).equalsIgnoreCase("timeout: ")) {
-				plugin.getLogger().warning(line);
-				String configLine = timeout.get(line.split(":")[0].replace(" ", "")).toString(); // NULL POINTER
-																									// EXECEPTION
+			if (!conf.get(lineNumber).contains("#") && !conf.get(lineNumber).contains("timeout")) {
+				String configLine = timeout.get(line.split(":")[0].replace(" ", "")).toString(); 											// EXECEPTION
 				if (configLine == null)
 					configLine = " ";
 				timeoutLines.add(line.split(":")[0] + ": " + configLine);
@@ -235,13 +232,13 @@ public class Config {
 		return timeoutLines;
 	}
 
-	private Collection<String> readUpdateMap(Map<Object, Object> update, int lineNumber) {
+	private static Collection<String> readUpdateMap(Map<Object, Object> update, int lineNumber) {
 		Collection<String> updateLines = new ArrayList<String>();
 		String line = conf.get(lineNumber);
 		addLines = 0;
 		while (!line.contains("# Discord")) {
 			addLines++;
-			if (!conf.get(lineNumber).contains("#") && conf.get(lineNumber).equalsIgnoreCase("update: ")) {
+			if (!line.contains("#") && !line.contains("update")) {
 				String configLine = update.get(line.split(":")[0].replace(" ", "")).toString();
 				if (configLine == null)
 					configLine = " ";
@@ -265,7 +262,7 @@ public class Config {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Object getConfig(Configure conf) {
+	public static Object getConfig(Configure conf) {
 		Map<Object, Object> timeout = (Map<Object, Object>) config.get("timeout");
 		Map<Object, Object> update = (Map<Object, Object>) config.get("update");
 		switch (conf) {
@@ -310,10 +307,10 @@ public class Config {
 		}
 	}
 
-	public boolean saveDefaultConfig() {
+	public static boolean saveDefaultConfig() {
 		try {
 			conf.add("# Used to verfy that that the discord server is owned by an admin of the server");
-			conf.add("id:");
+			conf.add("id: 1234896798");
 			conf.add("# Forces player to link to discord. Will freeze player when they log in,"
 					+ " until they link their discord to thier minecraft account");
 			conf.add("forceLink: false");
@@ -344,7 +341,7 @@ public class Config {
 			conf.add("  message: true");
 			conf.add("# Discord bot token.");
 			conf.add("token: ChangeMe");
-			BufferedWriter bw = new BufferedWriter(new FileWriter(plugin.getDataFolder() + "/config.yml"));
+			BufferedWriter bw = new BufferedWriter(new FileWriter("config.yml"));
 			for (String line : conf) {
 				bw.write(line);
 				bw.write('\n');
