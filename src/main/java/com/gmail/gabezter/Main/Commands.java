@@ -170,7 +170,7 @@ public class Commands implements CommandExecutor {
 									config.writeToConfig(Configure.UPDATE_TEMPORAL, "");
 //									plugin.getConfig().set("", "");
 //									plugin.saveConfig();
-									main.setupConfig();
+									config.setupConfig();
 								} else {
 									noPermission(sender);
 								}
@@ -256,13 +256,13 @@ public class Commands implements CommandExecutor {
 //								config.writeToConfig(Configure.UPDATE_TEMPORAL, "");
 //								plugin.getConfig().set("", "");
 //								plugin.saveConfig();
-								main.setupConfig();
+								config.setupConfig();
 							} else if (args[3].equalsIgnoreCase("rate")) {
 								configUpdate(Configure.UPDATE_RATE, args[4], sender);
 //								config.writeToConfig(Configure.UPDATE_RATE, "");
 //								plugin.getConfig().set("", "");
 //								plugin.saveConfig();
-								main.setupConfig();
+								config.setupConfig();
 							} else if (args[3].equalsIgnoreCase("from")) {
 								configUpdate(Configure.UPDATE_FROM, args[4], sender);
 								/*
@@ -291,11 +291,11 @@ public class Commands implements CommandExecutor {
 						if (args[2].equalsIgnoreCase("TIMEOUT")) {
 							if (args[3].equalsIgnoreCase("length")) {
 								config.writeToConfig(Configure.TIMEOUT_LENGTH, args[4]);
-								main.setupConfig();
+								config.setupConfig();
 							}
 							if (args[3].equalsIgnoreCase("temporal")) {
 								config.writeToConfig(Configure.TIMEOUT_TYPE, args[4]);
-								main.setupConfig();
+								config.setupConfig();
 							}
 						}
 					}
@@ -358,16 +358,16 @@ public class Commands implements CommandExecutor {
 	private boolean configUpdate(Configure conf, String arg, CommandSender sender) {
 		switch (conf) {
 		case UPDATE_TEMPORAL:
-			config.writeToConfig(Configure.UPDATE_TEMPORAL, "");
+			config.writeToConfig(Configure.UPDATE_TEMPORAL, arg);
 //			plugin.getConfig().set("", "");
 //			plugin.saveConfig();
-			main.setupConfig();
+			config.setupConfig();
 			return true;
 		case UPDATE_RATE:
-			config.writeToConfig(Configure.UPDATE_RATE, "");
+			config.writeToConfig(Configure.UPDATE_RATE, arg);
 //			plugin.getConfig().set("", "");
 //			plugin.saveConfig();
-			main.setupConfig();
+			config.setupConfig();
 			return true;
 		case UPDATE_FROM:
 			if (arg.equalsIgnoreCase("true")) {
@@ -375,13 +375,13 @@ public class Commands implements CommandExecutor {
 //				plugin.getConfig().set("update.FromMinecraft", true);
 				sender.sendMessage("The plugin will now update from the Minecraft server");
 //				plugin.saveConfig();
-				main.setupConfig();
+				config.setupConfig();
 			} else if (arg.equalsIgnoreCase("false")) {
 				config.writeToConfig(Configure.UPDATE_FROM, false);
 //				plugin.getConfig().set("update.FromMinecraft", false);
 				sender.sendMessage(id + "The plugin will now update from the Discord server!");
 //				plugin.saveConfig();
-				main.setupConfig();
+				config.setupConfig();
 			} else
 				sender.sendMessage("Value must be " + ChatColor.BOLD + "true" + ChatColor.RESET + " or "
 						+ ChatColor.BOLD + "false" + ChatColor.RESET + ". not " + arg);
@@ -422,7 +422,7 @@ public class Commands implements CommandExecutor {
 //			plugin.getConfig().set("timeout.length", args[4]);
 //			plugin.saveConfig();
 //			plugin.reloadConfig();
-			main.setupConfig();
+			config.setupConfig();
 			return true;
 		case TIMEOUT_TYPE:
 			config.writeToConfig(conf, arg);

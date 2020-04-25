@@ -39,7 +39,7 @@ public class Updater {
 					if (rank[0].equalsIgnoreCase(group)) {
 						List<Role> role = guild.getRolesByName(rank[1], true);
 						if (role.size() == 1) {
-							guild.addRoleToMember(dID +"", role.get(0)).queue();
+							guild.addRoleToMember(dID + "", role.get(0)).queue();
 							return true;
 						} else {
 							plugin.getLogger().warning("Multiple ranks found.. Please fix. -> Rank:" + rank[1]);

@@ -45,7 +45,7 @@ public class Main extends JavaPlugin {
 		File conf = new File(this.getDataFolder(), "config.yml");
 		if (!conf.exists())
 			config.saveDefaultConfig();
-		setupConfig();
+		config.setupConfig();
 		if (token != null && !token.equalsIgnoreCase("") && !token.equalsIgnoreCase("ChangeMe"))
 			success = botSetup();
 		else {
@@ -107,50 +107,9 @@ public class Main extends JavaPlugin {
 		return perms != null;
 	}
 
-	void setupConfig() {
-		
-		token = (String) config.getConfig(Configure.TOKEN);
-		id = (String) config.getConfig(Configure.ID);
-		forceLink = (boolean) config.getConfig(Configure.FORCELINK);
-		timeoutLength = (int) config.getConfig(Configure.TIMEOUT_LENGTH);
-		timeoutType = (String) config.getConfig(Configure.TIMEOUT_TYPE);
-		updateFrom = (boolean) config.getConfig(Configure.UPDATE_FROM);
-		updateRate = (int) config.getConfig(Configure.UPDATE_RATE);
-		updateType = (String) config.getConfig(Configure.UPDATE_TEMPORAL);
-		updateMessage = (boolean) config.getConfig(Configure.UPDATE_MESSAGE);
-		
-		Configure.TOKEN.setObj(token);
-		Configure.ID.setObj(id);
-		Configure.FORCELINK.setObj(forceLink);
-		Configure.TIMEOUT_LENGTH.setObj(timeoutLength);
-		Configure.TIMEOUT_TYPE.setObj(timeoutType);
-		Configure.UPDATE_FROM.setObj(updateFrom);
-		Configure.UPDATE_RATE.setObj(updateRate);
-		Configure.UPDATE_TEMPORAL.setObj(updateType);
-		Configure.UPDATE_MESSAGE.setObj(updateMessage);
-		
-		/*
-		token = getConfig().getString("token");
-		id = getConfig().getString("id");
-		forceLink = getConfig().getBoolean("forceLink");
-		timeoutLength = getConfig().getInt("timeout.length");
-		timeoutType = getConfig().getString("timeout.type");
-		updateFrom = getConfig().getBoolean("update.FromMinecraft");
-		updateRate = getConfig().getInt("update.rate");
-		updateType = getConfig().getString("update.temporal");
-		updateMessage = getConfig().getBoolean("update.message");
-		*/
-		if (id == null || id.isEmpty()) {
-			id = createCode();
-			getLogger().info(id);
-			config.writeToConfig(Configure.ID, id);
-			setupConfig();
-//			saveConfig();
-//			reloadConfig();
-		}
-	}
+	
 
-	private static String createCode() {
+	static String createCode() {
 		Random rand = new Random();
 		Date date = new Date();
 		long seed = date.getTime();

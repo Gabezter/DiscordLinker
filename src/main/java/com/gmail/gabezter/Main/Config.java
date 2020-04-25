@@ -22,13 +22,16 @@ public class Config {
 	public Config(Plugin plugin) {
 		this.plugin = plugin;
 		config = new HashMap<Object, Object>();
+		File f = new File(plugin.getDataFolder(), "config.yml");
+		if (!f.exists())
+			saveDefaultConfig();
 		readToMap();
 	}
 
 	public void reload() {
 		File f;
 		try {
-			f = new File("config.yml");
+			f = new File(plugin.getDataFolder(), "config.yml");
 			Scanner reader = new Scanner(f);
 			while (reader.hasNext()) {
 				String line = reader.nextLine();
@@ -61,13 +64,15 @@ public class Config {
 		while (!line.contains("# Update")) {
 			if (!line.contains("#")) {
 				String[] split = line.split(": ");
-				timeout.put(split[0].replace(" ", ""), split[1]);
+				if (split.length == 1)
+					timeout.put(split[0].replace(" ", ""), "");
+				else
+					timeout.put(split[0].replace(" ", ""), split[1]);
 			}
 			conf.add(line);
 			line = reader.nextLine();
 		}
 		conf.add(line);
-//		config.put("update", readUpdate(reader));
 		return timeout;
 	}
 
@@ -77,7 +82,7 @@ public class Config {
 		while (!line.contains("# Discord")) {
 			if (!line.contains("#")) {
 				String[] split = line.split(": ");
-				if (split[1] == null)
+				if (split.length == 1)
 					update.put(split[0].replace(" ", ""), " ");
 				else
 					update.put(split[0].replace(" ", ""), split[1]);
@@ -93,30 +98,34 @@ public class Config {
 		conf.clear();
 		File f;
 		try {
-			f = new File("config.yml");
+			f = new File(plugin.getDataFolder(), "config.yml");
 			Scanner reader = new Scanner(f);
 			while (reader.hasNext()) {
 				boolean skip = false;
 				String line = reader.nextLine();
 				if (!line.contains("#")) {
 					String[] tmp = line.split(": ");
-					if (tmp[0].equalsIgnoreCase("id:"))
+					if (tmp[0].equalsIgnoreCase("id"))
 						if (tmp.length == 1)
 							config.put("id", "");
 						else
 							config.put("id", tmp[1]);
-					else if (tmp[0].equalsIgnoreCase("timeout:")) {
+					else if (tmp[0].equalsIgnoreCase("timeout:") || tmp[0].equalsIgnoreCase("timeout")
+							|| tmp[0].equalsIgnoreCase("timeout: ")) {
 						conf.add(line);
 						config.put("timeout", readTimeout(reader));
 						skip = true;
-					} else if (tmp[0].equalsIgnoreCase("update:")) {
+					} else if (tmp[0].equalsIgnoreCase("update:") || tmp[0].equalsIgnoreCase("update")
+							|| tmp[0].equalsIgnoreCase("update: ")) {
 						conf.add(line);
 						config.put("update", readUpdate(reader));
 						skip = true;
-					} else if (tmp[0].equalsIgnoreCase("token:"))
+					} else if (tmp[0].equalsIgnoreCase("token"))
 						config.put("token", tmp[1]);
-					else
+					else {
+						plugin.getLogger().warning(tmp[0]);
 						config.put(tmp[0], tmp[1]);
+					}
 				}
 				if (!skip)
 					conf.add(line);
@@ -128,7 +137,7 @@ public class Config {
 	}
 
 	private void save() throws IOException {
-		PrintWriter pw = new PrintWriter(new FileWriter("config.yml", false));
+		PrintWriter pw = new PrintWriter(new FileWriter(plugin.getDataFolder() + "/config.yml", false));
 		ArrayList<String> tmp = merge();
 		conf = tmp;
 		for (String line : conf) {
@@ -144,58 +153,31 @@ public class Config {
 			Map<Object, Object> update = (Map<Object, Object>) config.get("update");
 			switch (conf) {
 			case ID:
-				if (object instanceof String)
-					config.put("id", object);
-				else
-					return false;
+				config.put("id", object);
 				break;
 			case FORCELINK:
-				if (object instanceof Boolean)
-					config.put("id", object);
-				else
-					return false;
+				config.put("forceLink", object);
 				break;
 			case TIMEOUT_LENGTH:
-				if (object instanceof Integer)
-					timeout.put("length", object);
-				else
-					return false;
+				timeout.put("length", object);
 				break;
 			case TIMEOUT_TYPE:
-				if (object instanceof String)
-					config.put("type", object);
-				else
-					return false;
+				config.put("type", object);
 				break;
 			case UPDATE_FROM:
-				if (object instanceof Boolean)
-					update.put("FromMinecraft", object);
-				else
-					return false;
+				plugin.getLogger().info("You called?");
+				update.put("FromMinecraft", object);
 				break;
 			case UPDATE_RATE:
-				if (object instanceof Integer)
-					update.put("rate", object);
-				else
-					return false;
-				break;
+				update.put("rate", object);
 			case UPDATE_TEMPORAL:
-				if (object instanceof String)
-					update.put("temporal", object);
-				else
-					return false;
+				update.put("temporal", object);
 				break;
 			case UPDATE_MESSAGE:
-				if (object instanceof Boolean)
-					update.put("message", object);
-				else
-					return false;
+				update.put("message", object);
 				break;
 			case TOKEN:
-				if (object instanceof String)
-					config.put("token", object);
-				else
-					return false;
+				config.put("token", object);
 				break;
 			default:
 				break;
@@ -214,19 +196,18 @@ public class Config {
 		for (int i = 0; i < conf.size(); i++) {
 			if (!conf.get(i).contains("#")) {
 				String confLine = conf.get(i);
-				if (confLine.contains("timeout"))
-					if (confLine.equalsIgnoreCase("timeout:")) {
-						fileLines.addAll(readTimeoutMap((Map<Object, Object>) config.get("timeout"), i));
-						i += addLines - 1;
-					} else if (confLine.equalsIgnoreCase("update:")) {
-						fileLines.addAll(readUpdateMap((Map<Object, Object>) config.get("update"), i));
-						i += addLines - 1;
-					} else {
-						String configLine = (String) config.get(confLine.split(":")[0]);
-						if (configLine == null)
-							configLine = " ";
-						fileLines.add(confLine.split(":")[0] + ": " + configLine);
-					}
+				if (confLine.contains("timeout:")) {
+					fileLines.addAll(readTimeoutMap((Map<Object, Object>) config.get("timeout"), i));
+					i += addLines - 1;
+				} else if (confLine.contains("update:")) {
+					fileLines.addAll(readUpdateMap((Map<Object, Object>) config.get("update"), i));
+					i += addLines - 1;
+				} else {
+					String configLine = (String) config.get(confLine.split(":")[0]);
+					if (configLine == null)
+						configLine = " ";
+					fileLines.add(confLine.split(":")[0] + ": " + configLine);
+				}
 			} else
 				fileLines.add(conf.get(i));
 		}
@@ -239,8 +220,10 @@ public class Config {
 		addLines = 0;
 		while (!line.contains("# Update")) {
 			addLines++;
-			if (!conf.get(lineNumber).contains("#")) {
-				String configLine = (String) timeout.get(line.split(":")[0].replace(" ", ""));
+			if (!conf.get(lineNumber).contains("#") && conf.get(lineNumber).equalsIgnoreCase("timeout: ")) {
+				plugin.getLogger().warning(line);
+				String configLine = timeout.get(line.split(":")[0].replace(" ", "")).toString(); // NULL POINTER
+																									// EXECEPTION
 				if (configLine == null)
 					configLine = " ";
 				timeoutLines.add(line.split(":")[0] + ": " + configLine);
@@ -258,8 +241,8 @@ public class Config {
 		addLines = 0;
 		while (!line.contains("# Discord")) {
 			addLines++;
-			if (!conf.get(lineNumber).contains("#")) {
-				String configLine = (String) update.get(line.split(":")[0].replace(" ", ""));
+			if (!conf.get(lineNumber).contains("#") && conf.get(lineNumber).equalsIgnoreCase("update: ")) {
+				String configLine = update.get(line.split(":")[0].replace(" ", "")).toString();
 				if (configLine == null)
 					configLine = " ";
 				updateLines.add(line.split(":")[0] + ": " + configLine);
@@ -301,7 +284,7 @@ public class Config {
 		case TIMEOUT_TYPE:
 			return (String) timeout.get("type");
 		case UPDATE_FROM:
-			String from = (String) update.get("FromMinecraft");
+			String from = update.get("FromMinecraft").toString();
 			if (from.equalsIgnoreCase("false"))
 				return false;
 			else if (from.equalsIgnoreCase("true"))
@@ -309,11 +292,11 @@ public class Config {
 			else
 				return null;
 		case UPDATE_RATE:
-			return Integer.parseInt((String) update.get("rate"));
+			return Integer.parseInt((String) update.get("rate").toString());
 		case UPDATE_TEMPORAL:
 			return (String) update.get("temporal");
 		case UPDATE_MESSAGE:
-			String message = (String) update.get("message");
+			String message = update.get("message").toString();
 			if (message.equalsIgnoreCase("false"))
 				return false;
 			else if (message.equalsIgnoreCase("true"))
@@ -361,7 +344,7 @@ public class Config {
 			conf.add("  message: true");
 			conf.add("# Discord bot token.");
 			conf.add("token: ChangeMe");
-			BufferedWriter bw = new BufferedWriter(new FileWriter("config.yml"));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(plugin.getDataFolder() + "/config.yml"));
 			for (String line : conf) {
 				bw.write(line);
 				bw.write('\n');
@@ -374,4 +357,45 @@ public class Config {
 		return true;
 	}
 
+	void setupConfig() {
+
+		Main.token = (String) getConfig(Configure.TOKEN);
+		Main.id = (String) getConfig(Configure.ID);
+		Main.forceLink = (boolean) getConfig(Configure.FORCELINK);
+		Main.timeoutLength = (int) getConfig(Configure.TIMEOUT_LENGTH);
+		Main.timeoutType = (String) getConfig(Configure.TIMEOUT_TYPE);
+		Main.updateFrom = (boolean) getConfig(Configure.UPDATE_FROM);
+		Main.updateRate = (int) getConfig(Configure.UPDATE_RATE);
+		Main.updateType = (String) getConfig(Configure.UPDATE_TEMPORAL);
+		Main.updateMessage = (boolean) getConfig(Configure.UPDATE_MESSAGE);
+
+		Configure.TOKEN.setObj(Main.token);
+		Configure.ID.setObj(Main.id);
+		Configure.FORCELINK.setObj(Main.forceLink);
+		Configure.TIMEOUT_LENGTH.setObj(Main.timeoutLength);
+		Configure.TIMEOUT_TYPE.setObj(Main.timeoutType);
+		Configure.UPDATE_FROM.setObj(Main.updateFrom);
+		Configure.UPDATE_RATE.setObj(Main.updateRate);
+		Configure.UPDATE_TEMPORAL.setObj(Main.updateType);
+		Configure.UPDATE_MESSAGE.setObj(Main.updateMessage);
+
+		/*
+		 * token = getConfig().getString("token"); id = getConfig().getString("id");
+		 * forceLink = getConfig().getBoolean("forceLink"); timeoutLength =
+		 * getConfig().getInt("timeout.length"); timeoutType =
+		 * getConfig().getString("timeout.type"); updateFrom =
+		 * getConfig().getBoolean("update.FromMinecraft"); updateRate =
+		 * getConfig().getInt("update.rate"); updateType =
+		 * getConfig().getString("update.temporal"); updateMessage =
+		 * getConfig().getBoolean("update.message");
+		 */
+		if (Main.id == null || Main.id.isEmpty()) {
+			Main.id = Main.createCode();
+			plugin.getLogger().info(Main.id);
+			writeToConfig(Configure.ID, Main.id);
+			setupConfig();
+//			saveConfig();
+//			reloadConfig();
+		}
+	}
 }

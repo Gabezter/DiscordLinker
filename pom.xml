@@ -3,16 +3,21 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gmail.gabezter</groupId>
-	<artifactId>DiscordRankBot</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>DiscordRankBot</name>
+	<artifactId>DiscordLinker</artifactId>
+	<version>0.1.1</version>
+	<name>DiscordLinker</name>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.0</version>
-				<configuration>
+				<configuration> 
 					<release>12</release>
 				</configuration>
 			</plugin>
@@ -27,7 +32,7 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<finalName>DiscordRankBot</finalName>
+							<finalName>DiscordLinker</finalName>
 						</configuration>
 					</execution>
 				</executions>
