@@ -24,6 +24,8 @@ public class Main extends JavaPlugin {
 	public static JDABuilder builder;
 	public static JDA bot;
 	public static Permission perms = null;
+	
+	/* Configuration variables */
 	public static String token = "";
 	public static boolean forceLink = false;
 	public static int timeoutLength = 0;
@@ -33,6 +35,7 @@ public class Main extends JavaPlugin {
 	public static String updateType = "h";
 	public static int updateRate = 5;
 	public static boolean updateMessage = false;
+	public static String invite = "";
 
 	private static boolean success = false;
 

@@ -341,6 +341,7 @@ public class Config {
 			conf.add("  message: true");
 			conf.add("# Discord bot token.");
 			conf.add("token: ChangeMe");
+			conf.add("invite-code: NULL");
 			BufferedWriter bw = new BufferedWriter(new FileWriter(plugin.getDataFolder() + "/config.yml"));
 			for (String line : conf) {
 				bw.write(line);
