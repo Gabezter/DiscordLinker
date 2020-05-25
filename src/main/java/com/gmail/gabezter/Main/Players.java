@@ -248,7 +248,7 @@ public class Players {
 		return 0L;
 	}
 
-	public static HashMap<UUID, Long> players(Plugin plugin) {
+	public static HashMap<UUID, Long> players() {
 
 		File playersFile;
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -256,7 +256,7 @@ public class Players {
 		Document doc = null;
 		Element root = null;
 
-		playersFile = new File(plugin.getDataFolder() + "/players.xml");
+		playersFile = new File(Main.plugin.getDataFolder() + "/players.xml");
 		if (!playersFile.exists()) {
 			try {
 				playersFile.createNewFile();
@@ -289,5 +289,10 @@ public class Players {
 			players.put(UUID.fromString(list.getNodeName()), dID);
 		}
 		return players;
+	}
+
+	public static boolean findPlayer(UUID uuid) {
+		HashMap<UUID, Long> players = players();
+		return players.containsKey(uuid);
 	}
 }

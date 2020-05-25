@@ -12,7 +12,7 @@ import org.bukkit.util.StringUtil;
 public class TabCompleter implements org.bukkit.command.TabCompleter {
 
 	private static final String[] BLANK_COMMANDS = {};
-	private static final String[] BASE_COMMANDS = { "link", "unlink", "admin", "help" };
+	private static final String[] BASE_COMMANDS = { "link", "unlink", "admin", "help", "register" };
 	private static final String[] SECOND_COMMANDS = { "rank", "config", "reload", "help" };
 	private static final String[] THIRD_RANK_COMMANDS = { "add", "remove", "list" };
 	private static final String[] THIRD_CONFIG_COMMANDS = { "update", "timeout" };

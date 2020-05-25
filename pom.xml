@@ -17,7 +17,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.0</version>
-				<configuration> 
+				<configuration>
 					<release>12</release>
 				</configuration>
 			</plugin>
@@ -44,10 +44,8 @@
 			<id>spigotmc-repo</id>
 			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
 		</repository>
-		<repository>
-			<id>vault-repo</id>
-			<url>http://nexus.hc.to/content/repositories/pub_releases</url>
-		</repository>
+		<!-- <repository> <id>vault-repo</id> <url>http://nexus.hc.to/content/repositories/pub_releases</url> 
+			</repository> -->
 		<repository>
 			<id>jcenter</id>
 			<name>jcenter-bintray</name>
@@ -82,7 +80,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.milkbowl.vault</groupId>
+			<groupId>com.github.MilkBowl</groupId>
 			<artifactId>VaultAPI</artifactId>
 			<version>1.7</version>
 			<scope>provided</scope>

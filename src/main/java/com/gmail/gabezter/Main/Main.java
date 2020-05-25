@@ -1,10 +1,10 @@
 package com.gmail.gabezter.Main;
 
-import java.io.File;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Random;
 
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -20,11 +20,11 @@ import net.milkbowl.vault.permission.Permission;
 
 public class Main extends JavaPlugin {
 
-	public static String consoleID = "[Discord Ranking]";
+	public static String consoleID = "[DiscordLink]";
 	public static JDABuilder builder;
 	public static JDA bot;
 	public static Permission perms = null;
-	
+
 	/* Configuration variables */
 	public static String token = "";
 	public static boolean forceLink = false;
@@ -43,11 +43,13 @@ public class Main extends JavaPlugin {
 	Ranks ranks = new Ranks(this);
 	Config config = new Config(this);
 
+	static Plugin plugin;
+
 	@Override
 	public void onEnable() {
-		File conf = new File(this.getDataFolder(), "config.yml");
-		if (!conf.exists())
-			config.saveDefaultConfig();
+//		File conf = new File(this.getDataFolder(), "config.yml");
+////		if (!conf.exists())
+////			config.saveDefaultConfig();
 		config.setupConfig();
 		if (token != null && !token.equalsIgnoreCase("") && !token.equalsIgnoreCase("ChangeMe"))
 			success = botSetup();
@@ -58,6 +60,10 @@ public class Main extends JavaPlugin {
 		startTask();
 		getCommand("discordlink").setExecutor(new Commands(this));
 		getCommand("discordlink").setTabCompleter(new TabCompleter());
+		getServer().getPluginManager().registerEvents( new LoginLinker() , this);
+
+		plugin = this;
+
 		if (!success)
 			this.onDisable();
 		else
@@ -109,8 +115,6 @@ public class Main extends JavaPlugin {
 		getLogger().info(perms.getName());
 		return perms != null;
 	}
-
-	
 
 	static String createCode() {
 		Random rand = new Random();

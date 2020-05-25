@@ -27,6 +27,8 @@ permissions:
       discordlink.link: true
       discordlink.register: true
       discordlink.unlink: true
+  discordlink.bypass:
+    default: op
   discordlink.admin:
     default: op
     children:
@@ -78,3 +80,4 @@ permissions:
       discordlink.admin.rank.list: true
       discordlink.admin.reload: true
       discordlink.admin.config.set.*: true
+      discordlink.player: true

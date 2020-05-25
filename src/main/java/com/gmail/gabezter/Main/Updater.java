@@ -28,7 +28,7 @@ public class Updater {
 
 	private static boolean updateFrom(Plugin plugin) {
 		try {
-			HashMap<UUID, Long> players = Players.players(plugin);
+			HashMap<UUID, Long> players = Players.players();
 			ArrayList<String[]> ranks = new Ranks(plugin).listRanks();
 			for (UUID uuid : players.keySet()) {
 				Long dID = players.get(uuid);

@@ -220,7 +220,7 @@ public class Config {
 		while (!line.contains("# Update")) {
 			addLines++;
 			if (!conf.get(lineNumber).contains("#") && !conf.get(lineNumber).contains("timeout")) {
-				String configLine = timeout.get(line.split(":")[0].replace(" ", "")).toString(); // EXECEPTION
+				String configLine = timeout.get(line.split(":")[0].replace(" ", "")).toString();
 				if (configLine == null)
 					configLine = " ";
 				timeoutLines.add(line.split(":")[0] + ": " + configLine);
@@ -302,6 +302,8 @@ public class Config {
 				return null;
 		case TOKEN:
 			return (String) config.get("token");
+		case INVITE:
+			return (String) config.get("invite-code");
 		default:
 			return null;
 		}
@@ -366,6 +368,7 @@ public class Config {
 		Main.updateRate = (int) getConfig(Configure.UPDATE_RATE);
 		Main.updateType = (String) getConfig(Configure.UPDATE_TEMPORAL);
 		Main.updateMessage = (boolean) getConfig(Configure.UPDATE_MESSAGE);
+		Main.invite = (String) getConfig(Configure.INVITE);
 
 		Configure.TOKEN.setObj(Main.token);
 		Configure.ID.setObj(Main.id);
@@ -376,6 +379,7 @@ public class Config {
 		Configure.UPDATE_RATE.setObj(Main.updateRate);
 		Configure.UPDATE_TEMPORAL.setObj(Main.updateType);
 		Configure.UPDATE_MESSAGE.setObj(Main.updateMessage);
+		Configure.INVITE.setObj(Main.invite);
 
 		/*
 		 * token = getConfig().getString("token"); id = getConfig().getString("id");
@@ -396,4 +400,5 @@ public class Config {
 //			reloadConfig();
 		}
 	}
+
 }
