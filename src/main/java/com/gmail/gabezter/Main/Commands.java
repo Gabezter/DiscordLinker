@@ -72,19 +72,23 @@ public class Commands implements CommandExecutor {
 				if (args[0].equalsIgnoreCase("register")) {
 					if (checkPermission(Cmds.REG, sender)) {
 						if (args.length == 2) {
-							switch (players.registerUser(uuid, sender.getName(), args[1],
-									Main.createCode(uuid.hashCode()))) {
-							case 1:
-								sender.sendMessage(id
-										+ "You have registered now check your direct messages on Discord for a code from the "
-										+ Main.bot.getGuildById(Main.id).getSelfMember().getUser().getName()
-										+ " Bot on the Discord Server");
-								break;
-							case 0:
-								sender.sendMessage(
-										id + "You could not be registered. Your account may already be registered.");
-							default:
-								break;
+							try {
+								switch (players.registerUser(uuid, sender.getName(), args[1],
+										Main.createCode(uuid.hashCode()))) {
+								case 1:
+									sender.sendMessage(id
+											+ "You have now registered. Please check your direct messages on Discord for a code from "
+											+ Main.bot.getGuildById(Main.id).getSelfMember().getUser().getName()
+											+ " on the Discord Server");
+									break;
+								case 0:
+									sender.sendMessage(id
+											+ "You could not be registered. Your account may already be registered.");
+								default:
+									break;
+								}
+							} catch (Exception e) {
+								sender.sendMessage(id + "Could not find user. Try again!");
 							}
 						} else {
 							sender.sendMessage(id + "Command is: /dc register [discord name]");
@@ -204,7 +208,7 @@ public class Commands implements CommandExecutor {
 							return true;
 						}
 						if (args[1].equalsIgnoreCase("config")) {
-							if(args.length == 2){
+							if (args.length == 2) {
 								sender.sendMessage(id + " Command is: /dc admin config [update,timeout]");
 								return true;
 							}
@@ -248,8 +252,9 @@ public class Commands implements CommandExecutor {
 						}
 						if (args[1].equalsIgnoreCase("reload")) {
 							if (checkPermission(Cmds.RELOAD, sender)) {
-								plugin.getPluginLoader().disablePlugin(plugin);
-								plugin.getPluginLoader().enablePlugin(plugin);
+//								plugin.getPluginLoader().disablePlugin(plugin);
+//								plugin.getPluginLoader().enablePlugin(plugin);
+								config.setupConfig();
 								sender.sendMessage(id + "Reload Complete");
 							} else {
 								noPermission(sender);
@@ -350,8 +355,9 @@ public class Commands implements CommandExecutor {
 						}
 					}
 					if (args[1].equalsIgnoreCase("reload")) {
-						plugin.getPluginLoader().disablePlugin(plugin);
-						plugin.getPluginLoader().enablePlugin(plugin);
+//						plugin.getPluginLoader().disablePlugin(plugin);
+//						plugin.getPluginLoader().enablePlugin(plugin);
+						config.setupConfig();
 						sender.sendMessage(id + "Reload Complete");
 						return true;
 					}

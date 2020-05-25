@@ -24,7 +24,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 
 public class Players {
 	private Plugin plugin;
@@ -160,12 +162,15 @@ public class Players {
 		long id = member.getIdLong();
 		bot.getUserById(id).openPrivateChannel().queue(channel -> {
 			String temp = "minute";
-			channel.sendMessage(id
-					+ "Hello, someone has requested to link this discord account to a minecraft account on the minecraft server "
-					+ plugin.getServer().getName() + " that is linked to the Discord server: "
-					+ bot.getGuildById(Main.id).getName()).queue();
+			Message msg = new MessageBuilder().append("/dc link " + code, MessageBuilder.Formatting.UNDERLINE).build();
+			channel.sendMessage(
+					"Hello, someone has requested to link this discord account to a Minecraft account on a Minecraft server that is linked to the Discord server: "
+							+ bot.getGuildById(Main.id).getName() + "(https://discord.gg/)" + Main.invite)
+					.queue();
 			channel.sendMessage("The code that needs to be entered on the server is: " + code).queue();
-			channel.sendMessage("To enter this code you must issue the command /dc link " + code).queue();
+			channel.sendMessage("To enter this code. you must issue the command:")
+					.queue();
+			channel.sendMessage(msg).queue();
 			switch (type.charAt(0)) {
 			case 's':
 				temp = "seconds";
